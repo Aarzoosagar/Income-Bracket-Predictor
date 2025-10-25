@@ -7,22 +7,24 @@ import joblib
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS  # Optional if frontend is separate
 
 # -------------------------------
 # Paths to saved files
 PREPROCESSOR_PATH = "preprocessor.joblib"
-MODEL_PATH = "saved_model/income_model"  # TensorFlow SavedModel
+MODEL_PATH = "saved_model/best_model(1).h5"
 # -------------------------------
 
 # Expected feature names (must match training)
 FEATURES = [
-    "age", "workclass", "education", "education-num", "marital-status",
-    "occupation", "relationship", "race", "sex", "capital-gain",
+    "age", "workclass", "education", "marital-status",
+    "occupation", "relationship", "gender", "capital-gain",
     "capital-loss", "hours-per-week", "native-country"
 ]
 
 app = Flask(__name__)
+CORS(app)  # optional
 
 # Load preprocessor and model
 print("Loading preprocessor and model...")
@@ -30,12 +32,23 @@ preprocessor = joblib.load(PREPROCESSOR_PATH)
 model = tf.keras.models.load_model(MODEL_PATH)
 print("Loaded successfully!")
 
+# -------------------------------
+# Serve frontend
+# -------------------------------
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+# -------------------------------
 # Health check endpoint
+# -------------------------------
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"})
 
+# -------------------------------
 # Predict endpoint
+# -------------------------------
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()

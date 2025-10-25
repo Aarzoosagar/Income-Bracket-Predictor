@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Income Bracket Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h2>Income Bracket Predictor</h2>
+    <form id="predictForm">
+        Age: <input type="number" name="age" required><br>
+        Workclass: <input type="text" name="workclass" required><br>
+        Education: <input type="text" name="education" required><br>
+        Marital Status: <input type="text" name="marital-status" required><br>
+        Occupation: <input type="text" name="occupation" required><br>
+        Relationship: <input type="text" name="relationship" required><br>
+        Gender: <input type="text" name="gender" required><br>
+        Capital Gain: <input type="number" name="capital-gain" required><br>
+        Capital Loss: <input type="number" name="capital-loss" required><br>
+        Hours per Week: <input type="number" name="hours-per-week" required><br>
+        Native Country: <input type="text" name="native-country" required><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById("predictForm");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Gather form data
+            const data = {};
+            for (let element of form.elements) {
+                if (element.name) {
+                    const value = element.type === "number" ? Number(element.value) : element.value;
+                    data[element.name] = value;
+                }
+            }
+
+            // Send POST request
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if(result.error){
+                document.getElementById("result").innerText = "Error: " + result.error;
+            } else {
+                const res = result[0];
+                document.getElementById("result").innerText = 
+                    `Prediction: ${res.label} | Probability: ${res.probability.toFixed(4)}`;
+            }
+        });
+    </script>
+</body>
+</html>

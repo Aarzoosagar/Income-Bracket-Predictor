@@ -9,7 +9,7 @@ import requests
 # URL of your API
 # For local: "http://127.0.0.1:5000/predict"
 # For Codespaces forwarded URL, replace below
-URL = "http://127.0.0.1:5000/predict"
+URL = "https://spidery-mummy-jj45xjqqrr5rhrrx-5000.app.github.dev/predict"
 # -------------------------------
 
 # Example inputs (multiple people)
